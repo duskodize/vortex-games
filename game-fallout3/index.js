@@ -14,7 +14,7 @@ function findGame() {
     }
     return Promise.resolve(instPath.value);
   } catch (err) {
-    return util.steam.findByName('Fallout 3')
+    return util.GameStoreHelper.findByName('Fallout 3')
       .then(game => game.gamePath);
   }
 }

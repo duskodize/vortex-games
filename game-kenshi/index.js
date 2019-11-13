@@ -3,6 +3,8 @@ const { fs, util } = require('vortex-api');
 
 const STEAM_DLL = 'steam_api.dll';
 
+const STEAM_ID = '233860';
+
 // Nexus Mods id for the game.
 const KENSHI_ID = 'kenshi';
 const STEAM_EXE = 'kenshi_x64.exe';
@@ -12,7 +14,7 @@ const GOG_EXE = 'kenshi_GOG_x64.exe';
 const MOD_FILE_EXT = '.mod';
 
 function findGame() {
-  return util.steam.findByAppId('233860')
+  return util.GameStoreHelper.findByAppId(STEAM_ID)
       .then(game => game.gamePath);
 }
 
@@ -26,7 +28,7 @@ function prepareForModding(discovery) {
 function requiresLauncher(gamePath) {
   return fs.readdirAsync(gamePath)
     .then(files => (files.find(file => file.indexOf(STEAM_DLL) !== -1) !== undefined)
-      ? Promise.resolve({ launcher: 'steam' })
+      ? Promise.resolve({ launcher: 'steamstorelauncher', addInfo: STEAM_ID })
       : Promise.resolve(undefined))
     .catch(err => Promise.reject(err));
 }

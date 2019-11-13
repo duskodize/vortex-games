@@ -8,14 +8,14 @@ const ENTRY_POINT = 'GameManager::Awake';
 const EPIC_APP_ID = 'Flour';
 
 function requiresLauncher() {
-  return util.epicGamesLauncher.isGameInstalled(EPIC_APP_ID)
-    .then(epic => epic
-      ? { launcher: 'epic', addInfo: EPIC_APP_ID }
+  return util.GameStoreHelper.isGameInstalled(EPIC_APP_ID, 'epicgameslauncher')
+    .then(launcherId => (!!launcherId)
+      ? { launcher: launcherId, addInfo: EPIC_APP_ID }
       : undefined);
 }
 
 function findGame() {
-  return util.epicGamesLauncher.findByName(EPIC_APP_ID)
+  return util.GameStoreHelper.findByAppId(EPIC_APP_ID)
     .then(epicEntry => epicEntry.gamePath);
 }
 

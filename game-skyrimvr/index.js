@@ -12,7 +12,7 @@ function findGame() {
     }
     return Promise.resolve(instPath.value);
   } catch (err) {
-    return util.steam.findByName('The Elder Scrolls V: Skyrim VR')
+    return util.GameStoreHelper.findByName('The Elder Scrolls V: Skyrim VR')
       .then(game => game.gamePath);
   }
 }

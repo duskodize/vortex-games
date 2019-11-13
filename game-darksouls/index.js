@@ -22,7 +22,7 @@ class DarkSouls {
   }
 
   queryPath() {
-    return util.steam.findByAppId('211420')
+    return util.GameStoreHelper.findByAppId('211420')
         .then(game => game.gamePath);
   }
 
@@ -33,7 +33,7 @@ class DarkSouls {
   requiresLauncher(gamePath) {
     return fs.readdirAsync(gamePath)
       .then(files => files.find(file => file.indexOf(STEAM_DLL) !== -1) !== undefined 
-        ? Promise.resolve({ launcher: 'steam' }) 
+        ? Promise.resolve({ launcher: 'steamstorelauncher', addInfo: '211420' })
         : Promise.resolve(undefined))
       .catch(err => Promise.reject(err));
   }

@@ -64,7 +64,7 @@ class StardewValley {
    */
   async queryPath() {
     // check Steam
-    let game = await util.steam.findByAppId('413150');
+    let game = await util.GameStoreHelper.findByAppId('413150');
     if (game)
       return game.gamePath;
 

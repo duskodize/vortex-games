@@ -2,7 +2,7 @@ const path = require('path');
 const { fs, util } = require('vortex-api');
 
 function findGame() {
-  return util.steam.findByName('XCOM 2')
+  return util.GameStoreHelper.findByName('XCOM 2')
       .then(game => game.gamePath);
 }
 

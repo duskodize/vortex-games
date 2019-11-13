@@ -12,7 +12,7 @@ function findGame() {
     }
     return Promise.resolve(instPath.value);
   } catch (err) {
-    return util.steam.findByName('The Elder Scrolls V: Skyrim Special Edition')
+    return util.GameStoreHelper.findByName('The Elder Scrolls V: Skyrim Special Edition')
       .then(game => game.gamePath);
   }
 }

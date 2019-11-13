@@ -35,14 +35,14 @@ class SubnauticaBelowZero {
   }
 
   async requiresLauncher() {
-    return util.epicGamesLauncher.isGameInstalled('foxglove')
-      .then(epic => epic
-        ? { launcher: 'epic', addInfo: 'foxglove' }
+    return util.GameStoreHelper.isGameInstalled('foxglove', 'epicgameslauncher')
+      .then(launcherId => (!!launcherId)
+        ? { launcher: launcherId, addInfo: 'foxglove' }
         : undefined);
   }
 
   async queryPath() {
-    return util.steam.findByAppId('848450')
+    return util.GameStoreHelper.findByAppId('848450')
       .then(game => game.gamePath);
   }
   

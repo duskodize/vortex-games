@@ -13,7 +13,7 @@ function findGame() {
     }
     return Promise.resolve(instPath.value);
   } catch (err) {
-    return util.steam.findByName('The Elder Scrolls III: Morrowind')
+    return util.GameStoreHelper.findByName('The Elder Scrolls III: Morrowind')
       .then(game => game.gamePath);
   }
 }

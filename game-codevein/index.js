@@ -16,7 +16,7 @@ const I18N_NAMESPACE = `game-${CODEVEIN_ID}`;
 const MOD_FILE_EXT = ".pak";
 
 function findGame() {
-  return util.steam.findByAppId('678960')
+  return util.GameStoreHelper.findByAppId('678960')
       .then(game => game.gamePath);
 }
 

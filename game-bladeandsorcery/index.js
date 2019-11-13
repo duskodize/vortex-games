@@ -68,7 +68,7 @@ async function getModName(destination, modFile, element, ext) {
 
 //GAME IS ALSO FOUND IN THE OCULUS STORE!!
 function findGame() {
-  return util.steam.findByAppId('629730')
+  return util.GameStoreHelper.findByAppId('629730')
       .then(game => game.gamePath);
 }
 

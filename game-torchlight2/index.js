@@ -26,7 +26,7 @@ function findGame() {
     }
     return Promise.resolve(instPath.value);
   } catch (err) {
-    return util.steam.findByAppId(STEAM_ID.toString())
+    return util.GameStoreHelper.findByAppId(STEAM_ID.toString())
       .then(game => game.gamePath);
   }
 }
@@ -75,7 +75,7 @@ function testSupportedContent(files, gameId) {
 
 function requiresLauncher(gamePath) {
   return fs.statAsync(path.join(gamePath, 'steam_api.dll'))
-    .then(() => Promise.resolve({ launcher: 'steam' }))
+    .then(() => Promise.resolve({ launcher: 'steamstorelauncher', addInfo: STEAM_ID }))
     .catch(err => Promise.resolve(undefined));
 }
 

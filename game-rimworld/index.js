@@ -4,14 +4,14 @@ const { fs, util } = require('vortex-api');
 const STEAM_DLL = 'steam_api64.dll'
 
 function findGame() {
-  return util.steam.findByAppId('294100')
+  return util.GameStoreHelper.findByAppId('294100')
       .then(game => game.gamePath);
 }
 
 function requiresLauncher(gamePath) {
   return fs.readdirAsync(gamePath)
     .then(files => (files.find(file => file.endsWith(STEAM_DLL)) !== undefined)
-      ? Promise.resolve({ launcher: 'steam' })
+      ? Promise.resolve({ launcher: 'steamstorelauncher', addInfo: '294100' })
       : Promise.resolve(undefined))
     .catch(err => Promise.reject(err));
 }

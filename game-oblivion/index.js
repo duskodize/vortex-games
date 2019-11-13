@@ -13,7 +13,7 @@ function findGame() {
     }
     return Promise.resolve(instPath.value);
   } catch (err) {
-    return util.steam.findByName('The Elder Scrolls IV: Oblivion')
+    return util.GameStoreHelper.findByName('The Elder Scrolls IV: Oblivion')
       .then(game => game.gamePath);
   }
 }

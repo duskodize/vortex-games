@@ -2,9 +2,9 @@ const path = require('path');
 const { log, util } = require('vortex-api');
 
 function findGame() {
-  return util.steam.findByName('State of Decay: Year-One')
+  return util.GameStoreHelper.findByName('State of Decay: Year-One')
       .catch(err => err instanceof util.GameNotFound
-        ? util.steam.findByName('State of Decay')
+        ? util.GameStoreHelper.findByName('State of Decay')
         : Promise.reject(err))
       .then(game => game.gamePath);
 }

@@ -3,7 +3,7 @@ const { log, util } = require('vortex-api');
 const path = require('path');
 
 function findGame() {
-  return util.steam.findByName('Breaking Wheel')
+  return util.GameStoreHelper.findByName('Breaking Wheel')
     .then(game => game.gamePath);
 }
 

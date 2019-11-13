@@ -3,7 +3,7 @@ const { fs, log, util } = require('vortex-api');
 const path = require('path');
 
 function findGame() {
-  return util.steam.findByName('Legend of Grimrock')
+  return util.GameStoreHelper.findByName('Legend of Grimrock')
       .then(game => game.gamePath);
 }
 

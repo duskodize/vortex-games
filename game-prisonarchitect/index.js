@@ -16,7 +16,7 @@ const STEAM_DLL = 'steam_api64.dll';
 function requiresLauncher(gamePath) {
   return fs.readdirAsync(gamePath)
     .then(files => (files.find(file => file.endsWith(STEAM_DLL)) !== undefined)
-      ? Promise.resolve({ launcher: 'steam' })
+      ? Promise.resolve({ launcher: 'steamstorelauncher', addInfo: STEAM_ID.toString() })
       : Promise.resolve(undefined))
     .catch(err => Promise.reject(err));
 }
@@ -32,7 +32,7 @@ function findGame() {
     }
     return Promise.resolve(instPath.value);
   } catch (err) {
-    return util.steam.findByAppId(STEAM_ID.toString())
+    return util.GameStoreHelper.findByAppId(STEAM_ID.toString())
       .then(game => game.gamePath);
   }
 }

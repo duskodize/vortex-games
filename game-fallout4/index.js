@@ -13,7 +13,7 @@ function findGame() {
     }
     return Promise.resolve(instPath.value);
   } catch (err) {
-    return util.steam.findByName('Fallout 4')
+    return util.GameStoreHelper.findByName('Fallout 4')
       .then(game => game.gamePath);
   }
 }

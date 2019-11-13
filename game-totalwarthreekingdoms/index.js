@@ -31,7 +31,7 @@ let tools = [
 ]
 
 function findGame() {
-  return util.steam.findByAppId('779340')
+  return util.GameStoreHelper.findByAppId('779340')
       .then(game => game.gamePath);
 }
 

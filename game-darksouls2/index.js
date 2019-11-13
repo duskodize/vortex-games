@@ -14,7 +14,7 @@ class DarkSouls2 {
   }
 
   queryPath() {
-    return util.steam.findByAppId(['236430', '335300'])
+    return util.GameStoreHelper.findByAppId(['236430', '335300'])
         .then(game => {
           if (game.appid === '335300') {
             this.details.steamAppId = game.appid;

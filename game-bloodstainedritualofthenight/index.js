@@ -9,7 +9,7 @@ const BLOODSTAINED_ID = 'bloodstainedritualofthenight';
 const MOD_FILE_EXT = ".pak";
 
 function findGame() {
-  return util.steam.findByAppId('692850')
+  return util.GameStoreHelper.findByAppId('692850')
       .then(game => game.gamePath);
 }
 

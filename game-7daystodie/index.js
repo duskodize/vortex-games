@@ -24,8 +24,8 @@ function findGame() {
     }
     return Promise.resolve(instPath.value);
   } catch (err) {
-    return util.steam.findByName('7 Days to Die')
-      .catch(() => util.steam.findByAppId('251570'))
+    return util.GameStoreHelper.findByName('7 Days to Die')
+      .catch(() => util.GameStoreHelper.findByAppId('251570'))
       .then(game => game.gamePath);
   }
 }
@@ -237,7 +237,7 @@ function migrate020(api, oldVersion) {
 function requiresLauncher(gamePath) {
   return fs.readdirAsync(gamePath)
     .then(files => (files.find(file => file.endsWith(STEAM_DLL)) !== undefined)
-      ? Promise.resolve({ launcher: 'steam' })
+      ? Promise.resolve({ launcher: 'steamstorelauncher', addInfo: '251570' })
       : Promise.resolve(undefined))
     .catch(err => Promise.reject(err));
 }

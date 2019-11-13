@@ -40,7 +40,7 @@ const KOTOR_GAMES = {
 function requiresLauncher(gamePath) {
   return fs.readdirAsync(gamePath)
     .then(files => files.find(file => file.indexOf(STEAM_DLL) !== -1) !== undefined 
-      ? Promise.resolve({ launcher: 'steam' }) 
+      ? Promise.resolve({ launcher: 'steamstorelauncher', addInfo: '208580' })
       : Promise.resolve(undefined))
     .catch(err => Promise.reject(err));
 }
@@ -59,7 +59,7 @@ function readRegistryKey(hive, key, name) {
 
 function findGame(kotorGame) {
   const { gogId, steamId } = kotorGame;
-  return util.steam.findByAppId(steamId)
+  return util.GameStoreHelper.findByAppId(steamId)
     .then(game => game.gamePath)
     .catch(() => readRegistryKey('HKEY_LOCAL_MACHINE',
       `SOFTWARE\\WOW6432Node\\GOG.com\\Games\\${gogId}`,

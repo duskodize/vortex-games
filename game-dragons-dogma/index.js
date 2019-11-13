@@ -2,7 +2,7 @@ const path = require('path');
 const { fs, log, util } = require('vortex-api');
 
 function findGame() {
-  return util.steam.findByName('Dragon\'s Dogma: Dark Arisen')
+  return util.GameStoreHelper.findByName('Dragon\'s Dogma: Dark Arisen')
     .then(game => game.gamePath);
 }
 

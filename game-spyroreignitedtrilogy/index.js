@@ -14,7 +14,7 @@ const I18N_NAMESPACE = `game-${SPYRO_ID}`;
 const MOD_FILE_EXT = ".pak";
 
 function findGame() {
-  return util.steam.findByAppId('996580')
+  return util.GameStoreHelper.findByAppId('996580')
       .then(game => game.gamePath);
 }
 

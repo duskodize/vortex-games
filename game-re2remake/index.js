@@ -77,8 +77,8 @@ function addToFileList(files) {
 }
 
 function findGame() {
-  return util.steam.findByAppId(STEAM_ID.toString())
-    .catch(err => util.steam.findByAppId(STEAM_ID_Z.toString()))
+  return util.GameStoreHelper.findByAppId(STEAM_ID.toString())
+    .catch(err => util.GameStoreHelper.findByAppId(STEAM_ID_Z.toString()))
     .then(game => game.gamePath);
 }
 

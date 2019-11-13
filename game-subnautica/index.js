@@ -34,14 +34,14 @@ class Subnautica {
   }
 
   async requiresLauncher() {
-    return util.epicGamesLauncher.isGameInstalled('Jaguar')
-      .then(epic => epic
-        ? { launcher: 'epic', addInfo: 'Jaguar' }
+    return util.GameStoreHelper.isGameInstalled('Jaguar', 'epicgameslauncher')
+      .then(launcherId => (!!launcherId)
+        ? { launcher: launcherId, addInfo: 'Jaguar' }
         : undefined);
   }
 
   async queryPath() {
-    return util.steam.findByAppId('264710')
+    return util.GameStoreHelper.findByAppId('264710')
         .then(game => game.gamePath);
   }
   

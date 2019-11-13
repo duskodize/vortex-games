@@ -3,7 +3,7 @@ const { fs, log, util } = require('vortex-api');
 const path = require('path');
 
 function findGame() {
-  return util.steam.findByName('No Man\'s Sky')
+  return util.GameStoreHelper.findByName('No Man\'s Sky')
       .then(game => game.gamePath);
 }
 

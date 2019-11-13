@@ -14,8 +14,8 @@ function findGame() {
     }
     return Promise.resolve(instPath.value);
   } catch (err) {
-    return util.steam.findByName('The Witcher 3: Wild Hunt')
-      .catch(() => util.steam.findByAppId('499450'))
+    return util.GameStoreHelper.findByName('The Witcher 3: Wild Hunt')
+      .catch(() => util.GameStoreHelper.findByAppId('499450'))
       .then(game => game.gamePath);
   }
 }

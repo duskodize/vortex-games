@@ -5,7 +5,7 @@ const { fs, types, util } = require('vortex-api');
 const GAME_ID = 'greedfall';
 
 function findGame() {
-  return util.steam.findByAppId("606880").then(game => game.gamePath);
+  return util.GameStoreHelper.findByAppId("606880").then(game => game.gamePath);
 }
 
 function prepareForModding(discovery) {

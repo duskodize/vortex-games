@@ -10,7 +10,7 @@ const SOUND_CONFIG = `sound{
 }`;
 
 function findGame() {
-  return util.steam.findByName('War Thunder')
+  return util.GameStoreHelper.findByName('War Thunder')
       .then(game => game.gamePath);
 }
 

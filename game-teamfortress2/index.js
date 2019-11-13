@@ -6,7 +6,7 @@ const STEAM_ID = 440;
 const GAME_ID = 'teamfortress2';
 
 function findGame() {
-  return util.steam.findByAppId(STEAM_ID.toString())
+  return util.GameStoreHelper.findByAppId(STEAM_ID.toString())
     .then(game => game.gamePath);
 }
 

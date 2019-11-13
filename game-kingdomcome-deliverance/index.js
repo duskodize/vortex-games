@@ -11,7 +11,7 @@ const I18N_NAMESPACE = `game-${GAME_ID}`;
 let _PAK_MODS = [];
 
 function findGame() {
-  return util.steam.findByAppId('379430')
+  return util.GameStoreHelper.findByAppId('379430')
       .then(game => game.gamePath);
 }
 

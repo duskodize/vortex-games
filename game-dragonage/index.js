@@ -14,7 +14,7 @@ let _ADDINS_PATH = undefined;
 let _MODS_PATH = undefined;
 
 function findGame() {
-  return util.steam.findByAppId(STEAM_ID.toString())
+  return util.GameStoreHelper.findByAppId(STEAM_ID.toString())
     .then(discovered => discovered.path)
     .catch(err => {
       try {
@@ -79,7 +79,7 @@ function requiresLauncher(gamePath) {
   //  safe to assume that if we find this file - we need the launcher.
   const gameRoot = gamePath.substring(0, gamePath.lastIndexOf(path.sep));
   return fs.statAsync(path.join(gameRoot, 'redist', 'DAOU_UpdateAddinsXML_Steam.exe'))
-    .then(() => Promise.resolve({ launcher: 'steam' }))
+    .then(() => Promise.resolve({ launcher: 'steamstorelauncher', addInfo: STEAM_ID.toString() }))
     .catch(err => Promise.resolve(undefined));
 }
 

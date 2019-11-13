@@ -13,7 +13,7 @@ function findGame() {
     }
     return Promise.resolve(instPath.value);
   } catch (err) {
-    return util.steam.findByName('Fallout 4 VR')
+    return util.GameStoreHelper.findByName('Fallout 4 VR')
       .then(game => game.gamePath);
   }
 }
