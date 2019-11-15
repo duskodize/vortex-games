@@ -34,7 +34,7 @@ class Subnautica {
   }
 
   async requiresLauncher() {
-    return util.GameStoreHelper.isGameInstalled('Jaguar', 'epicgameslauncher')
+    return util.GameStoreHelper.isGameInstalled('Jaguar', 'epic')
       .then(launcherId => (!!launcherId)
         ? { launcher: launcherId, addInfo: 'Jaguar' }
         : undefined);

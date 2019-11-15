@@ -35,7 +35,7 @@ class SubnauticaBelowZero {
   }
 
   async requiresLauncher() {
-    return util.GameStoreHelper.isGameInstalled('foxglove', 'epicgameslauncher')
+    return util.GameStoreHelper.isGameInstalled('foxglove', 'epic')
       .then(launcherId => (!!launcherId)
         ? { launcher: launcherId, addInfo: 'foxglove' }
         : undefined);

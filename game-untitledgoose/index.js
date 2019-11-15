@@ -8,7 +8,7 @@ const ENTRY_POINT = 'GameManager::Awake';
 const EPIC_APP_ID = 'Flour';
 
 function requiresLauncher() {
-  return util.GameStoreHelper.isGameInstalled(EPIC_APP_ID, 'epicgameslauncher')
+  return util.GameStoreHelper.isGameInstalled(EPIC_APP_ID, 'epic')
     .then(launcherId => (!!launcherId)
       ? { launcher: launcherId, addInfo: EPIC_APP_ID }
       : undefined);

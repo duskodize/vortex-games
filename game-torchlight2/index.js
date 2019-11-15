@@ -75,7 +75,7 @@ function testSupportedContent(files, gameId) {
 
 function requiresLauncher(gamePath) {
   return fs.statAsync(path.join(gamePath, 'steam_api.dll'))
-    .then(() => Promise.resolve({ launcher: 'steamstorelauncher', addInfo: STEAM_ID }))
+    .then(() => Promise.resolve({ launcher: 'steam', addInfo: STEAM_ID }))
     .catch(err => Promise.resolve(undefined));
 }
 

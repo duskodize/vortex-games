@@ -11,7 +11,7 @@ function findGame() {
 function requiresLauncher(gamePath) {
   return fs.readdirAsync(gamePath)
     .then(files => (files.find(file => file.endsWith(STEAM_DLL)) !== undefined)
-      ? Promise.resolve({ launcher: 'steamstorelauncher', addInfo: '294100' })
+      ? Promise.resolve({ launcher: 'steam', addInfo: '294100' })
       : Promise.resolve(undefined))
     .catch(err => Promise.reject(err));
 }

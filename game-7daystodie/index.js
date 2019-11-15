@@ -237,7 +237,7 @@ function migrate020(api, oldVersion) {
 function requiresLauncher(gamePath) {
   return fs.readdirAsync(gamePath)
     .then(files => (files.find(file => file.endsWith(STEAM_DLL)) !== undefined)
-      ? Promise.resolve({ launcher: 'steamstorelauncher', addInfo: '251570' })
+      ? Promise.resolve({ launcher: 'steam', addInfo: '251570' })
       : Promise.resolve(undefined))
     .catch(err => Promise.reject(err));
 }

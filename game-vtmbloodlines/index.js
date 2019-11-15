@@ -24,7 +24,7 @@ function requiresLauncher(gamePath) {
   //  the game's discovery path... Attempt to launch via Steam if
   //  we're able to retrieve the game's information via the Steam wrapper
   return util.GameStoreHelper.findByAppId(STEAM_ID.toString())
-    .then(game => Promise.resolve({ launcher: 'steamstorelauncher', addInfo: STEAM_ID.toString() }))
+    .then(game => Promise.resolve({ launcher: 'steam', addInfo: STEAM_ID.toString() }))
     .catch(err => Promise.resolve(undefined));
 }
 

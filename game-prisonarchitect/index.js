@@ -16,7 +16,7 @@ const STEAM_DLL = 'steam_api64.dll';
 function requiresLauncher(gamePath) {
   return fs.readdirAsync(gamePath)
     .then(files => (files.find(file => file.endsWith(STEAM_DLL)) !== undefined)
-      ? Promise.resolve({ launcher: 'steamstorelauncher', addInfo: STEAM_ID.toString() })
+      ? Promise.resolve({ launcher: 'steam', addInfo: STEAM_ID.toString() })
       : Promise.resolve(undefined))
     .catch(err => Promise.reject(err));
 }

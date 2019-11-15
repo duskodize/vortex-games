@@ -40,7 +40,7 @@ const KOTOR_GAMES = {
 function requiresLauncher(gamePath) {
   return fs.readdirAsync(gamePath)
     .then(files => files.find(file => file.indexOf(STEAM_DLL) !== -1) !== undefined 
-      ? Promise.resolve({ launcher: 'steamstorelauncher', addInfo: '208580' })
+      ? Promise.resolve({ launcher: 'steam', addInfo: '208580' })
       : Promise.resolve(undefined))
     .catch(err => Promise.reject(err));
 }

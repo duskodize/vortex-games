@@ -79,7 +79,7 @@ function requiresLauncher(gamePath) {
   //  safe to assume that if we find this file - we need the launcher.
   const gameRoot = gamePath.substring(0, gamePath.lastIndexOf(path.sep));
   return fs.statAsync(path.join(gameRoot, 'redist', 'DAOU_UpdateAddinsXML_Steam.exe'))
-    .then(() => Promise.resolve({ launcher: 'steamstorelauncher', addInfo: STEAM_ID.toString() }))
+    .then(() => Promise.resolve({ launcher: 'steam', addInfo: STEAM_ID.toString() }))
     .catch(err => Promise.resolve(undefined));
 }
 
