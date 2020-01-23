@@ -1,83 +1,42 @@
 const Promise = require('bluebird');
 const path = require('path');
-const winapi = require('winapi-bindings');
 const { app, remote } = require('electron');
-const { actions, fs, util } = require('vortex-api');
+const { actions, fs, selectors, util } = require('vortex-api');
+const { runPatcher } = require('harmony-patcher');
+const semver = require('semver');
 
 const uniApp = app || remote.app;
 
-let _API;
 const GAME_ID = 'dawnofman';
 const STEAM_ID = 858810;
-const GOG_ID = 1899257943;
-const UMM_DLL = 'UnityModManager.dll';
 const SCENE_FILE_EXT = '.scn.xml';
 const UMM_MOD_INFO = 'Info.json';
+const I18N_NAMESPACE = `game-${GAME_ID}`;
+const DATAPATH = path.join('DawnOfMan_Data', 'Managed');
+const ENTRY_POINT = 'DawnOfMan.TitleStateMain::init';
 
 function getSceneFolder() {
   return path.join(uniApp.getPath('documents'), 'DawnOfMan', 'Scenarios');
 }
 
-function readRegistryKey(hive, key, name) {
-  try {
-    const instPath = winapi.RegGetValue(hive, key, name);
-    if (!instPath) {
-      throw new Error('empty registry key');
-    }
-    return Promise.resolve(instPath.value);
-  } catch (err) {
-    return Promise.reject(new util.ProcessCanceled(err));
-  }
-}
-
-function findUnityModManager() {
-  return readRegistryKey('HKEY_CURRENT_USER', 'Software\\UnityModManager', 'Path')
-    .then(value => fs.statAsync(path.join(value, UMM_DLL)));
-}
-
 function findGame() {
-  return util.steam.findByAppId(STEAM_ID.toString())
-    .then(game => game.gamePath)
-    .catch(() => readRegistryKey('HKEY_LOCAL_MACHINE',
-      `SOFTWARE\\WOW6432Node\\GOG.com\\Games\\${GOG_ID}`,
-      'PATH'))
-    .catch(() => readRegistryKey('HKEY_LOCAL_MACHINE',
-      `SOFTWARE\\GOG.com\\Games\\${GOG_ID}`,
-      'PATH'))
+  return util.GameStoreHelper.findByName('Dawn of Man')
+    .then(game => game.gamePath);
 }
 
-function prepareForModding(discovery) {
-  const showUMMDialog = () => new Promise((resolve, reject) => {
-    _API.store.dispatch(actions.showDialog('question', 'Action required',
-      {
-        message: 'Most Dawn of Man mods require Unity Mod Manager to be installed to run correctly.\n'
-               + 'Once installed, UMM must be used to inject your mods into the game itself.\n'
-               + 'For ease of use, UMM comes pre-added as a tool for Dawn of Man but you may have\n'
-               + 'to configure it manually.\n'
-               + 'For usage information and download link please see UMM\'s page.\n\n'
-               + 'Please note: simpler "Scenario" mods can be used without UMM.'
-      },
-      [
-        { label: 'Continue', action: () => resolve() },
-        { label: 'More on Vortex Tools', action: () => {
-          util.opn('https://wiki.nexusmods.com/index.php/Category:Tool_Setup')
-            .then(() => showUMMDialog())
-            .catch(err => undefined);
-          resolve();
-        }},
-        { label: 'Go to UMM page', action: () => {
-          util.opn('https://www.nexusmods.com/site/mods/21/').catch(err => undefined);
-          // We want to go forward even if UMM is not installed as the scenario modType
-          //  can be installed without UMM.
-          resolve();
-        }},
-      ]));
-  });
+function modsPath() {
+  return 'Mods';
+}
 
-  return fs.ensureDirWritableAsync(getSceneFolder(), () => Promise.resolve())
-    .then(() => fs.ensureDirWritableAsync(path.join(discovery.path, 'Mods'), () => Promise.resolve()))
-    .then(() => findUnityModManager()
-      .catch(err => showUMMDialog()));
+function prepareForModding(discovery, api) {
+  const moddingPath = path.join(discovery.path, modsPath());
+  const absDataPath = path.join(discovery.path, DATAPATH);
+  return new Promise((resolve) => (!hasModsInstalled(api))
+    ? runPatcher(__dirname, absDataPath, ENTRY_POINT, false, moddingPath)
+      .then(() => resolve())
+    : resolve())
+    .then(() => fs.ensureDirWritableAsync(getSceneFolder(), () => Promise.resolve()))
+    .then(() => fs.ensureDirWritableAsync(path.join(discovery.path, modsPath()), () => Promise.resolve()));
 }
 
 function endsWithPattern(instructions, pattern) {
@@ -146,30 +105,170 @@ function testMod(files, gameId) {
   });
 }
 
+function hasModsInstalled(api) {
+  const state = api.store.getState();
+  const mods = util.getSafe(state, ['persistent', 'mods', GAME_ID], {});
+  return Object.keys(mods).length > 0;
+}
+
+function migrate010(api, oldVersion) {
+  if (semver.gte(oldVersion, '0.1.0')) {
+    return Promise.resolve();
+  }
+
+  if (!hasModsInstalled(api)) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve) => {
+    return api.sendNotification({
+      id: 'dom-requires-upgrade',
+      type: 'warning',
+      message: api.translate('Vortex no longer requires UMM',
+        { ns: I18N_NAMESPACE }),
+      noDismiss: true,
+      actions: [
+        {
+          title: 'Explain',
+          action: () => {
+            api.showDialog('info', 'Dawn of Man', {
+              text: 'As part of our on-going quest to improve Vortex, we have developed '
+                  + 'and integrated a Unity patcher/mod loader which will remove Vortex\'s '
+                  + 'dependency on the UMM application. The integrated unity patcher is capable of '
+                  + 'loading and executing existing/future UMM mods AND newly created Vortex patcher mods.\n'
+                  + 'What this means for you as a user of this extension:\n\n'
+                  + '1. Your mods and UMM installation are currently intact, and you may continue '
+                  + 'playing DoM through UMM as you have been so far - Vortex can still be used '
+                  + 'to download and install DoM mods inside UMM\'s mods folder; but keep in mind that '
+                  + 'UMM cannot load/execute Vortex specific mods.\n\n'
+                  + '2. You can find a new dropdown button on the Mods page which will give you '
+                  + 'control over Vortex\'s Unity patcher. Please DO NOT use these buttons unless '
+                  + 'the existing UMM patcher function has been uninstalled/removed!\n\n'
+                  + '3. To uninstall/remove the UMM patcher function, please start-up the UMM tool '
+                  + 'select Dawn of Man and click the uninstall button. (if it\'s greyed out, you\'re '
+                  + 'good to go)\n\n'
+                  + '4. Once you confirmed that the UMM patch has been removed - click on the "Patcher - Add" '
+                  + 'button on the mods page and Vortex will inject its own patcher method\n\n'
+                  + 'You\'re good to go.',
+            }, [
+              { label: 'Close' },
+            ]);
+          },
+        },
+        {
+          title: 'Understood',
+          action: dismiss => {
+            dismiss();
+            resolve();
+          }
+        }
+      ],
+    });
+  });
+}
+
+function getDiscoveryPath(state) {
+  const discovery = util.getSafe(state, ['settings', 'gameMode', 'discovered', GAME_ID], undefined);
+  if ((discovery === undefined) || (discovery.path === undefined)) {
+    log('error', 'dawnofman was not discovered');
+    return undefined;
+  }
+
+  return discovery.path;
+}
+
 function main(context) {
-  _API = context.api;
-  context.requireExtension('modtype-umm');
   context.registerGame({
     id: GAME_ID,
     name: 'Dawn of Man',
     logo: 'gameart.jpg',
     mergeMods: true,
     queryPath: findGame,
-    queryModPath: () => 'Mods',
+    queryModPath: modsPath,
     executable: () => 'DawnOfMan.exe',
     requiredFiles: [],
     details: {
       steamAppId: STEAM_ID,
     },
-    setup: prepareForModding,
+    setup: (discovery) => prepareForModding(discovery, context.api),
   });
 
   context.registerModType('dom-scene-modtype', 25,
     (gameId) => gameId === GAME_ID, () => getSceneFolder(),
     (instructions) => endsWithPattern(instructions, SCENE_FILE_EXT));
 
+  context.registerMigration(old => migrate010(context.api, old));
   context.registerInstaller('dom-scene-installer', 25, testSceneMod, installSceneMod);
   context.registerInstaller('dom-mod', 25, testMod, installMod);
+
+  const isGameRunning = (state) => {
+    return Object.keys(util.getSafe(state, ['session', 'base', 'toolsRunning'], {})).length > 0;
+  }
+
+  const gameIsRunningNotif = () => {
+    context.api.sendNotification({
+      type: 'info',
+      message: 'Can\'t run harmony patcher while a tool/game is running',
+      displayMS: 5000,
+    });
+  }
+
+  const reportPatcherError = (err) => {
+    context.api.showErrorNotification('Patcher encountered errors',
+      'The patcher was unable to finish its operation "{{errorMsg}}"',
+      { replace: { errorMsg: err } });
+  };
+
+  context.registerAction('mod-icons', 500, 'savegame', {}, 'Patcher - Remove', () => {
+    const store = context.api.store;
+    const state = store.getState();
+    const gameMode = selectors.activeGameId(state);
+    if (gameMode !== GAME_ID) {
+      return false;
+    }
+
+    if (isGameRunning(state)) {
+      gameIsRunningNotif();
+      return true;
+    }
+
+    const discoveryPath = getDiscoveryPath(state);
+    const moddingPath = path.join(discoveryPath, modsPath());
+    const dataPath = path.join(discoveryPath, DATAPATH);
+    runPatcher(__dirname, dataPath, ENTRY_POINT, true, moddingPath)
+      .catch(err => reportPatcherError(err));
+    return true;
+  }, () => {
+    const state = context.api.store.getState();
+    const gameMode = selectors.activeGameId(state);
+    return (gameMode === GAME_ID)
+  });
+
+  context.registerAction('mod-icons', 500, 'savegame', {}, 'Patcher - Add', () => {
+    const store = context.api.store;
+    const state = store.getState();
+    const gameMode = selectors.activeGameId(state);
+    if (gameMode !== GAME_ID) {
+      return false;
+    }
+
+    if (isGameRunning(state)) {
+      gameIsRunningNotif();
+      return true;
+    }
+
+    const discoveryPath = getDiscoveryPath(state);
+    const moddingPath = path.join(discoveryPath, modsPath());
+    const dataPath = path.join(discoveryPath, DATAPATH);
+
+    runPatcher(__dirname, dataPath, ENTRY_POINT, false, moddingPath)
+      .catch(err => reportPatcherError(err));
+    return true;
+  }, () => {
+    const state = context.api.store.getState();
+    const gameMode = selectors.activeGameId(state);
+    return (gameMode === GAME_ID)
+  });
 }
 
 module.exports = {
